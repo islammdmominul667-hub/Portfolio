@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Motion Designer Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* 
+         Scroll Snap Logic:
+         This creates the "non-linear" magnetic feel.
+         The viewport will snap to the defined sections.
+      */
+      html {
+        scroll-behavior: smooth;
+        height: 100%;
+        scroll-snap-type: y mandatory;
+        overflow-y: scroll;
+      }
+      body {
+        height: 100%;
+      }
+      
+      /* Hide scrollbar for cleaner look but keep functionality */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 4px;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+</head>
+  <body class="bg-red-600 text-black overflow-x-hidden">
+    <div id="root"></div>
+  </body>
+</html>
