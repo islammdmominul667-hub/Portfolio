@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,6 +10,7 @@
       body {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
       }
       /* 
          Scroll Snap Logic:
@@ -21,20 +23,21 @@
         scroll-snap-type: y mandatory;
         overflow-y: scroll;
       }
-      body {
-        height: 100%;
+      
+      /* Aggressively hide scrollbars */
+      ::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
       }
       
-      /* Hide scrollbar for cleaner look but keep functionality */
-      ::-webkit-scrollbar {
-        width: 8px;
+      * {
+        -ms-overflow-style: none !important; /* IE/Edge */
+        scrollbar-width: none !important;    /* Firefox */
       }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background-color: rgba(0,0,0,0.2);
-        border-radius: 4px;
+
+      body {
+        height: 100%;
       }
     </style>
   <script type="importmap">
@@ -47,7 +50,9 @@
 }
 </script>
 </head>
-  <body class="bg-red-600 text-black overflow-x-hidden">
+  <body class="bg-red-600 text-black">
     <div id="root"></div>
+    <!-- Добавляем эту строку здесь -->
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
