@@ -5,7 +5,7 @@ import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
 import { ProjectDetail } from './components/ProjectDetail';
 import { StyleframeGrid } from './components/StyleframeGrid';
-//import { LoadingScreen } from './components/LoadingScreen';//
+import { LoadingScreen } from './components/LoadingScreen';
 import { Project, ViewState, Language } from './types';
 
 const MOCK_PROJECTS: Project[] = [
@@ -63,6 +63,14 @@ const App: React.FC = () => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [appIsLoading, setAppIsLoading] = useState(true);
 
+  // Safety valve: If loading screen logic fails for any reason, force open after 6 seconds
+  useEffect(() => {
+    const safetyTimer = setTimeout(() => {
+      setAppIsLoading(false);
+    }, 6000);
+    return () => clearTimeout(safetyTimer);
+  }, []);
+
   const handleProjectSelect = (project: Project) => {
     setSelectedProject(project);
     setView('PROJECT_DETAIL');
@@ -86,11 +94,11 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-red-600 text-black font-sans selection:bg-black selection:text-white">
-      {/* {appIsLoading && (
+      {appIsLoading && (
         <LoadingScreen 
           onComplete={() => setAppIsLoading(false)} 
         />
-      )} */}
+      )}
       
       <Header 
         onNavigate={handleNavigate} 
