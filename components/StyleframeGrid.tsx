@@ -10,7 +10,7 @@ interface StyleframeGridProps {
 }
 
 const ALL_FRAMES = [
- "/frames/NRF_1.png",
+  "/frames/NRF_1.png",
   "/frames/NRF_2.png",
   "/frames/NRF_3.png",
   "/frames/1ST_REG_1.png",
