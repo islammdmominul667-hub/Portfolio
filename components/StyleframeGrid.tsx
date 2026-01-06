@@ -10,22 +10,22 @@ interface StyleframeGridProps {
 }
 
 const ALL_FRAMES = [
- "/frames/NRF_1.png",
-  "/frames/NRF_2.png",
-  "/frames/NRF_3.png",
-  "/frames/1ST_REG_1.png",
-  "/frames/1ST_REG_2.png",
-  "/frames/1ST_REG_3.png",
-  "/frames/ELIGOVISION_1.png",
-  "/frames/ELIGOVISION_2.png",
-  "/frames/ELIGOVISION_3.png",
-  "/frames/AMUR_1.png",
-  "/frames/AMUR_2.png",
-  "/frames/AMUR_3.png",
-  "/frames/AMUR_4.png",
-  "/frames/photo1.png",
-  "/frames/photo1.png",
-  "/frames/photo1.png",
+  "https://picsum.photos/id/10/1000/1000",
+  "https://picsum.photos/id/14/1000/1000",
+  "https://picsum.photos/id/19/1000/1000",
+  "https://picsum.photos/id/26/1000/1000",
+  "https://picsum.photos/id/28/1000/1000",
+  "https://picsum.photos/id/35/1000/1000",
+  "https://picsum.photos/id/42/1000/1000",
+  "https://picsum.photos/id/48/1000/1000",
+  "https://picsum.photos/id/58/1000/1000",
+  "https://picsum.photos/id/69/1000/1000",
+  "https://picsum.photos/id/76/1000/1000",
+  "https://picsum.photos/id/88/1000/1000",
+  "https://picsum.photos/id/95/1000/1000",
+  "https://picsum.photos/id/106/1000/1000",
+  "https://picsum.photos/id/111/1000/1000",
+  "https://picsum.photos/id/117/1000/1000",
 ];
 
 const getThumb = (url: string) => {
