@@ -305,7 +305,7 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
             {ALL_FRAMES.slice(0, 16).map((src, idx) => (
               <div 
                 key={idx} 
-                className="aspect-square relative overflow-hidden bg-black/10 cursor-pointer scale-[1.01]" 
+                className="aspect-square relative overflow-hidden bg-black/10 cursor-pointer" 
                 onClick={() => setLightboxIndex(idx)}
               >
                  <img src={getThumb(src)} alt="" className="w-full h-full object-cover" />
@@ -321,7 +321,7 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
               return (
                 <div 
                   key={`img-${idx}`} 
-                  className={`${item.col} aspect-square relative bg-black/10 overflow-hidden group transition-all duration-300 scale-[1.01]`} 
+                  className={`${item.col} aspect-square relative bg-black/10 overflow-hidden group transition-all duration-300`} 
                   onMouseEnter={() => setIsHoveringImage(true)}
                   onMouseLeave={() => setIsHoveringImage(false)}
                   onClick={() => {
