@@ -305,7 +305,7 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
       {/* Foreground Grid Layer */}
       <div className="relative z-10 w-full py-12 md:py-24">
         {isMobile ? (
-          <div className="grid grid-cols-2 gap-0 px-8">
+          <div className="grid grid-cols-2 gap-[5px] px-8">
             {ALL_FRAMES.slice(0, 16).map((src, idx) => (
               <div 
                 key={idx} 
@@ -321,7 +321,7 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-5 gap-0 w-full px-16">
+          <div className="grid grid-cols-5 gap-[5px] w-full px-16">
             {gridLayout.map((item, idx) => {
               const isMulti = isMultiSpan(item.col);
 
