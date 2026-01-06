@@ -12,20 +12,7 @@ interface StyleframeGridProps {
 const ALL_FRAMES = [
   "/frames/NRF_1.png",
   "/frames/NRF_2.png",
-  "/frames/NRF_3.png",
-  "/frames/1ST_REG_1.png",
-  "/frames/1ST_REG_2.png",
-  "/frames/1ST_REG_3.png",
-  "/frames/ELIGOVISION_1.png",
-  "/frames/ELIGOVISION_2.png",
-  "/frames/ELIGOVISION_3.png",
-  "/frames/AMUR_1.png",
-  "/frames/AMUR_2.png",
-  "/frames/AMUR_3.png",
-  "/frames/AMUR_4.png",
-  "/frames/photo1.png",
-  "/frames/photo1.png",
-  "/frames/photo1.png",
+
 ];
 
 const getThumb = (url: string) => {
