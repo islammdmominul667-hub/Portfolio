@@ -9,7 +9,7 @@ interface StyleframeGridProps {
 }
 
 const ALL_FRAMES = [
-  "https://picsum.photos/id/10/1000/1000",
+  "/frames/photo1.png",
   "https://picsum.photos/id/14/1000/1000",
   "https://picsum.photos/id/19/1000/1000",
   "https://picsum.photos/id/26/1000/1000",
