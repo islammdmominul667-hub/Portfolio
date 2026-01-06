@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 import { Project } from '../types';
@@ -9,7 +10,7 @@ interface StyleframeGridProps {
 }
 
 const ALL_FRAMES = [
-  "/frames/NRF_1.png",
+ "/frames/NRF_1.png",
   "/frames/NRF_2.png",
   "/frames/NRF_3.png",
   "/frames/1ST_REG_1.png",
@@ -298,11 +299,11 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
       {/* Foreground Grid Layer */}
       <div className="relative z-10 w-full py-12 md:py-24">
         {isMobile ? (
-          <div className="grid grid-cols-2 gap-2 px-8">
+          <div className="grid grid-cols-2 gap-0 px-8">
             {ALL_FRAMES.slice(0, 16).map((src, idx) => (
               <div 
                 key={idx} 
-                className="aspect-square relative overflow-hidden bg-black/10 rounded-sm shadow-xl cursor-pointer" 
+                className="aspect-square relative overflow-hidden bg-black/10 shadow-xl cursor-pointer" 
                 onClick={() => setLightboxIndex(idx)}
               >
                  <img src={getThumb(src)} alt="" className="w-full h-full object-cover" />
@@ -318,7 +319,7 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
               return (
                 <div 
                   key={`img-${idx}`} 
-                  className={`${item.col} aspect-square relative bg-black/10 overflow-hidden shadow-2xl group border border-white/20 transition-all duration-300`} 
+                  className={`${item.col} aspect-square relative bg-black/10 overflow-hidden shadow-2xl group transition-all duration-300`} 
                   onMouseEnter={() => setIsHoveringImage(true)}
                   onMouseLeave={() => setIsHoveringImage(false)}
                   onClick={() => {
