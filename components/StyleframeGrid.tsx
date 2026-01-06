@@ -17,8 +17,8 @@ const ALL_FRAMES = [
   "/frames/1ST_REG_2.png",
   "/frames/1ST_REG_3.png",
   "/frames/ELIGOVISION_1.png",
-  "/frames/ELIGOVISION_3.png",
   "/frames/ELIGOVISION_2.png",
+  "/frames/ELIGOVISION_3.png",
   "/frames/AMUR_1.png",
   "/frames/AMUR_2.png",
   "/frames/AMUR_3.png",
@@ -271,6 +271,10 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
     { type: 'IMG', col: 'md:col-start-2 md:row-start-8 md:col-span-1 md:row-span-1', srcIdx: 12 },
   ];
 
+  const isMultiSpan = (className: string) => {
+    return className.includes('span-2');
+  };
+
   return (
     <div 
       className={`w-full flex flex-col relative bg-red-600 ${isHoveringImage && !isMobile ? 'cursor-none' : ''}`}
@@ -319,13 +323,18 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
         ) : (
           <div className="grid grid-cols-5 gap-0 w-full px-16">
             {gridLayout.map((item, idx) => {
+              const isMulti = isMultiSpan(item.col);
+
               if (item.type === 'EMPTY') {
                 return <div key={`empty-${idx}`} className={`${item.col} aspect-square`}></div>;
               }
               return (
                 <div 
                   key={`img-${idx}`} 
-                  className={`${item.col} aspect-square relative bg-black/10 overflow-hidden group`} 
+                  // Fix for sub-pixel misalignment: 
+                  // Only apply aspect-square to 1x1 cells. 
+                  // Multi-span cells should naturally fill the height defined by their neighbors.
+                  className={`${item.col} ${isMulti ? 'h-full w-full' : 'aspect-square'} relative bg-black/10 overflow-hidden group`} 
                   onMouseEnter={() => setIsHoveringImage(true)}
                   onMouseLeave={() => setIsHoveringImage(false)}
                   onClick={() => {
