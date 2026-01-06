@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, useMotionValue } from 'framer-motion';
 import { Project } from '../types';
 
@@ -10,7 +10,7 @@ interface StyleframeGridProps {
 }
 
 const ALL_FRAMES = [
- "/frames/NRF_1.png",
+  "/frames/NRF_1.png",
   "/frames/NRF_2.png",
   "/frames/NRF_3.png",
   "/frames/1ST_REG_1.png",
@@ -27,6 +27,8 @@ const ALL_FRAMES = [
   "/frames/photo1.png",
   "/frames/photo1.png",
 ];
+
+const TEXT_CONTENT = "Motion is the primary language of the modern digital landscape. At the core of high-quality motion design lies more than just algorithms or complex geometry; it requires a deep understanding of rhythm and visual dramaturgy. Every project begins with the search for the perfect balance between form and function, where light, texture, and dynamics operate as a single mechanism. We do not merely create images; we manipulate time within the frame. Whether it is the subtle glint on a product’s edge or a large-scale installation that alters the perception of architecture, the goal remains the same: to capture attention and evoke emotion. True design exists at the intersection of technology and intuition, transforming static pixels into a living, breathing experience. It is the process of turning the chaos of ideas into a structured visual narrative that speaks to the viewer without words.";
 
 const getThumb = (url: string) => {
   if (url.includes('picsum.photos')) {
@@ -105,9 +107,10 @@ const Lightbox: React.FC<LightboxProps> = ({ src, index, total, onClose, onNext,
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, onNext, onPrev]);
 
-  return (
+  // Use createPortal to move the modal to document.body, avoiding z-index stacking issues
+  return createPortal(
     <div 
-      className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-sm flex items-center justify-center cursor-auto" 
+      className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center cursor-auto" 
       onClick={(e) => {
         // Close on background click
         e.stopPropagation();
@@ -179,7 +182,8 @@ const Lightbox: React.FC<LightboxProps> = ({ src, index, total, onClose, onNext,
                 {String(index + 1).padStart(2, '0')}/{total}
             </div>
         </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -269,6 +273,10 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
     { type: 'IMG', col: 'md:col-start-2 md:row-start-8 md:col-span-1 md:row-span-1', srcIdx: 12 },
   ];
 
+  const isMultiSpan = (className: string) => {
+    return className.includes('span-2');
+  };
+
   return (
     <div 
       className={`w-full flex flex-col relative bg-red-600 ${isHoveringImage && !isMobile ? 'cursor-none' : ''}`}
@@ -296,30 +304,50 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
         </motion.div>
       )}
 
-      {/* Foreground Grid Layer */}
-      <div className="relative z-10 w-full py-12 md:py-24">
+      {/* Background Text Layer (z-0) */}
+      <div className="absolute inset-0 z-0 flex flex-col justify-start items-center pointer-events-none overflow-hidden select-none">
+        {/* Container with drastically reduced padding to allow text to fill the screen width almost entirely.
+            Left/Right padding set to minimal values (4px mobile, 10px desktop) as requested. */}
+        <div className="w-full h-full px-[4px] md:px-[10px] py-8 md:py-20">
+            <p className="w-full text-justify font-black uppercase text-[8.15vw] md:text-[5.05vw] leading-[1.03] tracking-tighter text-white break-words hyphens-auto">
+               {TEXT_CONTENT}
+            </p>
+        </div>
+      </div>
+
+      {/* Foreground Grid Layer (z-10) */}
+      <div className="relative z-10 w-full pt-12 md:py-24 pb-12">
         {isMobile ? (
-          <div className="grid grid-cols-2 gap-0 px-8">
+          <div className="grid grid-cols-2 gap-[5px] px-8">
             {ALL_FRAMES.slice(0, 16).map((src, idx) => (
               <div 
                 key={idx} 
-                className="aspect-square relative overflow-hidden bg-black/10 shadow-xl cursor-pointer" 
+                className="aspect-square relative overflow-hidden bg-black/10 cursor-pointer block" 
                 onClick={() => setLightboxIndex(idx)}
               >
-                 <img src={getThumb(src)} alt="" className="w-full h-full object-cover" />
+                 <img 
+                    src={getThumb(src)} 
+                    alt="" 
+                    className="absolute inset-0 w-full h-full object-cover" 
+                 />
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-5 gap-0 w-full px-16">
+          <div className="grid grid-cols-5 gap-[5px] w-full px-16">
             {gridLayout.map((item, idx) => {
+              const isMulti = isMultiSpan(item.col);
+
               if (item.type === 'EMPTY') {
                 return <div key={`empty-${idx}`} className={`${item.col} aspect-square`}></div>;
               }
               return (
                 <div 
                   key={`img-${idx}`} 
-                  className={`${item.col} aspect-square relative bg-black/10 overflow-hidden shadow-2xl group transition-all duration-300`} 
+                  // Fix for sub-pixel misalignment: 
+                  // Only apply aspect-square to 1x1 cells. 
+                  // Multi-span cells should naturally fill the height defined by their neighbors.
+                  className={`${item.col} ${isMulti ? 'h-full w-full' : 'aspect-square'} relative bg-black/10 overflow-hidden group`} 
                   onMouseEnter={() => setIsHoveringImage(true)}
                   onMouseLeave={() => setIsHoveringImage(false)}
                   onClick={() => {
@@ -330,7 +358,7 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
                   <img 
                     src={getThumb(ALL_FRAMES[item.srcIdx!])} 
                     alt="" 
-                    className="w-full h-full object-cover select-none pointer-events-none" 
+                    className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none" 
                   />
                 </div>
               );
