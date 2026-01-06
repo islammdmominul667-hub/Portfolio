@@ -5,7 +5,7 @@ import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
 import { ProjectDetail } from './components/ProjectDetail';
 import { StyleframeGrid } from './components/StyleframeGrid';
-import { LoadingScreen } from './components/LoadingScreen';
+//import { LoadingScreen } from './components/LoadingScreen';//
 import { Project, ViewState, Language } from './types';
 
 const MOCK_PROJECTS: Project[] = [
@@ -86,11 +86,11 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-red-600 text-black font-sans selection:bg-black selection:text-white">
-      {appIsLoading && (
+      {/* {appIsLoading && (
         <LoadingScreen 
           onComplete={() => setAppIsLoading(false)} 
         />
-      )}
+      )} */}
       
       <Header 
         onNavigate={handleNavigate} 
