@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { Project, Language } from '../types';
 
 interface ProjectDetailProps {
@@ -8,7 +9,8 @@ interface ProjectDetailProps {
 }
 
 export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, lang }) => {
-  
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
   const labels = {
     EN: {
       back: "Back to Works",
@@ -16,6 +18,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, l
       software: "Software",
       client: "Client",
       agency: "Agency / Confidential",
+      loading: "Establishing Stream...",
     },
     RU: {
       back: "Назад к работам",
@@ -23,24 +26,15 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, l
       software: "Софт",
       client: "Клиент",
       agency: "Агентство / Конфиденциально",
+      loading: "Установка соединения...",
     }
   };
 
   const t = labels[lang];
 
-  // Scroll to top when mounting detail view
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const isVimeo = project.videoUrl.includes('vimeo');
-
-  // Determine aspect ratio class based on project ID
-  const getAspectRatioClass = (id: number) => {
-    if (id === 1) return 'aspect-[2.4/1]'; // NRF9 - Cinematic Ultra-Wide
-    if (id === 4) return 'aspect-[4/3]';   // Amur VEF - 4:3
-    return 'aspect-video';                 // Default 16:9
-  };
 
   return (
     <div className="pt-32 pb-20 px-4 md:px-8 max-w-screen-xl mx-auto animate-fade-in-up">
@@ -54,36 +48,31 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, l
         {t.back}
       </button>
 
-      {/* Main Video Player Area */}
-      <div className={`w-full ${getAspectRatioClass(project.id)} bg-black mb-12 relative overflow-hidden group shadow-2xl`}>
-        {isVimeo ? (
-           <iframe
-              src={`${project.videoUrl}?autoplay=1&title=0&byline=0&portrait=0`}
-              className="w-full h-full bg-black"
-              style={{ backgroundColor: 'black' }}
-              frameBorder="0"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-            />
-        ) : (
-          <>
-            <img 
-              src={project.videoUrl} 
-              alt={project.title} 
-              className="w-full h-full object-cover opacity-80"
-            />
-            <div className="absolute inset-0 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              <div className="w-24 h-24 rounded-full border-2 border-white/30 flex items-center justify-center backdrop-blur-sm cursor-pointer hover:bg-white hover:text-red-600 hover:border-white text-white transition-colors">
-                <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
-            </div>
-          </>
+      {/* Main Video Player Area - All 16:9 (aspect-video) */}
+      <div className="w-full aspect-video bg-black mb-12 relative overflow-hidden shadow-2xl border-4 border-white/20">
+        
+        {/* Optimized Placeholder */}
+        {!videoLoaded && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 z-20">
+             <div className="w-[60%] h-1 bg-white/10 relative overflow-hidden rounded-full mb-4">
+                <div className="absolute inset-0 bg-red-600 w-1/3 animate-loading-bar"></div>
+             </div>
+             <p className="text-white/20 font-mono text-[10px] uppercase tracking-[0.4em] animate-pulse">{t.loading}</p>
+          </div>
         )}
+
+        <div className="w-full h-full">
+          <iframe
+            src={`${project.videoUrl}?autoplay=0&loop=1&muted=0&quality=1080p&dnt=1`}
+            className={`w-full h-full bg-black transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'} scale-[1.02]`}
+            frameBorder="0"
+            allow="autoplay; fullscreen"
+            allowFullScreen
+            onLoad={() => setVideoLoaded(true)}
+          />
+        </div>
       </div>
 
-      {/* Project Info Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-20">
         <div className="md:col-span-2">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 uppercase leading-none text-black">
@@ -117,6 +106,16 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack, l
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes loading-bar {
+          0% { transform: translateX(-150%); }
+          100% { transform: translateX(300%); }
+        }
+        .animate-loading-bar {
+          animation: loading-bar 1.5s infinite ease-in-out;
+        }
+      `}</style>
     </div>
   );
 };

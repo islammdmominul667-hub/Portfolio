@@ -12,30 +12,21 @@
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
       }
-      /* 
-         Scroll Snap Logic:
-         This creates the "non-linear" magnetic feel.
-         The viewport will snap to the defined sections.
-      */
       html {
         scroll-behavior: smooth;
         height: 100%;
         scroll-snap-type: y mandatory;
         overflow-y: scroll;
       }
-      
-      /* Aggressively hide scrollbars */
       ::-webkit-scrollbar {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
       }
-      
       * {
-        -ms-overflow-style: none !important; /* IE/Edge */
-        scrollbar-width: none !important;    /* Firefox */
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
       }
-
       body {
         height: 100%;
       }
@@ -43,16 +34,18 @@
   <script type="importmap">
 {
   "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
+    "framer-motion": "https://esm.sh/framer-motion@^12.24.7",
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
 </head>
   <body class="bg-red-600 text-black">
     <div id="root"></div>
-    <!-- Добавляем эту строку здесь -->
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
