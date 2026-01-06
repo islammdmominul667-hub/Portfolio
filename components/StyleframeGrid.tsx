@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 import { Project } from '../types';
@@ -51,38 +50,25 @@ const AnimatedEye = () => {
           strokeLinejoin="round"
           animate={{ scaleY: [1, 1, 0.1, 1] }}
           transition={{
-            duration: 4,
+            duration: 6,
             repeat: Infinity,
             times: [0, 0.9, 0.95, 1],
             ease: "easeInOut"
           }}
         />
-        <motion.g
-          animate={{ 
-            x: [0, -25, -25, 25, 25, 0, 0, 0, 0, 0], 
-            y: [0, 0, 0, 0, 0, -18, -18, 18, 18, 0] 
-          }}
-          transition={{
-            duration: 5,
+        <motion.circle
+            cx="60"
+            cy="50"
+            r="16"
+            fill="white"
+            animate={{ scaleY: [1, 1, 0.1, 1] }}
+            transition={{
+            duration: 6,
             repeat: Infinity,
-            ease: "easeInOut",
-            times: [0, 0.1, 0.25, 0.35, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-          }}
-        >
-            <motion.circle
-              cx="60"
-              cy="50"
-              r="16"
-              fill="white"
-              animate={{ scaleY: [1, 1, 0.1, 1] }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                times: [0, 0.9, 0.95, 1],
-                ease: "easeInOut"
-              }}
-            />
-        </motion.g>
+            times: [0, 0.9, 0.95, 1],
+            ease: "easeInOut"
+            }}
+        />
       </svg>
     </div>
   );
@@ -173,7 +159,7 @@ const Lightbox: React.FC<LightboxProps> = ({ src, index, total, onClose, onNext,
               key={src} // Key change triggers animation
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
               src={src} 
               alt="" 
               className="relative z-10 max-w-full max-h-[70vh] md:max-h-[80vh] object-contain shadow-2xl pointer-events-auto select-none"
