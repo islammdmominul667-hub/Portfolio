@@ -306,9 +306,10 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
 
       {/* Background Text Layer (z-0) */}
       <div className="absolute inset-0 z-0 flex flex-col justify-start items-center pointer-events-none overflow-hidden select-none">
-        {/* Container aligned with grid padding to ensure text fits exactly within the grid's visual bounds */}
-        <div className="w-full h-full px-8 md:px-16 pt-12 pb-12 md:py-24">
-            <p className="w-full text-justify font-black uppercase text-[8vw] md:text-[4.95vw] leading-[1.05] tracking-tighter text-white break-words hyphens-auto">
+        {/* Container with drastically reduced padding to allow text to fill the screen width almost entirely.
+            Left/Right padding set to minimal values (4px mobile, 10px desktop) as requested. */}
+        <div className="w-full h-full px-[4px] md:px-[10px] py-8 md:py-20">
+            <p className="w-full text-justify font-black uppercase text-[8.15vw] md:text-[5.05vw] leading-[1.03] tracking-tighter text-white break-words hyphens-auto">
                {TEXT_CONTENT}
             </p>
         </div>
