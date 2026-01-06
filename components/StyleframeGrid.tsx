@@ -1,5 +1,6 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, useMotionValue } from 'framer-motion';
 import { Project } from '../types';
 
 interface StyleframeGridProps {
@@ -8,18 +9,10 @@ interface StyleframeGridProps {
   onLightboxToggle?: (isOpen: boolean) => void;
 }
 
-const getProjectCode = (id: number) => `[PRJ_${String(id).padStart(2, '0')}]`;
-
-/**
- * ИНСТРУКЦИЯ ДЛЯ ЯНДЕКС.ДИСКА:
- * 1. Скопируйте публичную ссылку (https://disk.yandex.ru/i/...)
- * 2. Добавьте префикс: https://getfile.dokpub.com/yandex/get/
- * Итоговая ссылка в массиве: "https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/..."
- */
 const ALL_FRAMES = [
-  "https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/tuMwPrzupOuCVw",
-  "https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/5dpkRAPwv5qSGw",
-  "https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/i/kmHMWItYfoUZ8Q",
+  "https://picsum.photos/id/10/1000/1000",
+  "https://picsum.photos/id/14/1000/1000",
+  "https://picsum.photos/id/19/1000/1000",
   "https://picsum.photos/id/26/1000/1000",
   "https://picsum.photos/id/28/1000/1000",
   "https://picsum.photos/id/35/1000/1000",
@@ -35,7 +28,6 @@ const ALL_FRAMES = [
   "https://picsum.photos/id/117/1000/1000",
 ];
 
-// Функция превью (для демонстрации Picsum)
 const getThumb = (url: string) => {
   if (url.includes('picsum.photos')) {
     return url.replace('1000/1000', '500/500');
@@ -43,9 +35,182 @@ const getThumb = (url: string) => {
   return url;
 };
 
+const AnimatedEye = () => {
+  return (
+    <div className="relative w-20 h-16 md:w-28 md:h-24 flex items-center justify-center pointer-events-none drop-shadow-xl">
+      <svg 
+        viewBox="0 0 120 100" 
+        className="w-full h-full overflow-visible"
+      >
+        <motion.path
+          d="M10 50 Q60 5 110 50 Q60 95 10 50 Z"
+          fill="none"
+          stroke="white" 
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          animate={{ scaleY: [1, 1, 0.1, 1] }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            times: [0, 0.9, 0.95, 1],
+            ease: "easeInOut"
+          }}
+        />
+        <motion.g
+          animate={{ 
+            x: [0, -25, -25, 25, 25, 0, 0, 0, 0, 0], 
+            y: [0, 0, 0, 0, 0, -18, -18, 18, 18, 0] 
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            times: [0, 0.1, 0.25, 0.35, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+          }}
+        >
+            <motion.circle
+              cx="60"
+              cy="50"
+              r="16"
+              fill="white"
+              animate={{ scaleY: [1, 1, 0.1, 1] }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                times: [0, 0.9, 0.95, 1],
+                ease: "easeInOut"
+              }}
+            />
+        </motion.g>
+      </svg>
+    </div>
+  );
+};
+
+// --- Isolated Lightbox Component ---
+interface LightboxProps {
+  src: string;
+  index: number;
+  total: number;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+}
+
+const Lightbox: React.FC<LightboxProps> = ({ src, index, total, onClose, onNext, onPrev }) => {
+  const [loading, setLoading] = useState(true);
+
+  // Reset loading when image source changes
+  useEffect(() => {
+    setLoading(true);
+  }, [src]);
+
+  // Keyboard Navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.stopPropagation();
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') onNext();
+      if (e.key === 'ArrowLeft') onPrev();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, onNext, onPrev]);
+
+  return (
+    <div 
+      className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-sm flex items-center justify-center cursor-auto" 
+      onClick={(e) => {
+        // Close on background click
+        e.stopPropagation();
+        onClose();
+      }}
+    >
+        {/* Close Button */}
+        <button 
+            className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors z-[250] p-2 focus:outline-none cursor-pointer" 
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+        >
+            <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+
+        {/* Prev Button */}
+        <button 
+            className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors p-4 z-[250] focus:outline-none hidden md:block cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); onPrev(); }}
+        >
+            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 19l-7-7 7-7" /></svg>
+        </button>
+
+        {/* Next Button */}
+        <button 
+            className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors p-4 z-[250] focus:outline-none hidden md:block cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); onNext(); }}
+        >
+            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5l7 7-7 7" /></svg>
+        </button>
+
+        {/* Mobile Arrows */}
+        <div className="absolute bottom-16 md:bottom-12 flex gap-12 md:hidden z-[250] left-1/2 -translate-x-1/2">
+            <button onClick={(e) => { e.stopPropagation(); onPrev(); }} className="text-white/50 hover:text-white p-2 cursor-pointer"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" /></svg></button>
+            <button onClick={(e) => { e.stopPropagation(); onNext(); }} className="text-white/50 hover:text-white p-2 cursor-pointer"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" /></svg></button>
+        </div>
+
+        {/* Main Content Area */}
+        <div 
+            className="relative w-full h-full flex items-center justify-center p-4 md:p-16 pointer-events-none"
+        >
+            {/* Loading Spinner */}
+            {loading && (
+              <div className="absolute inset-0 flex items-center justify-center z-0">
+                <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+              </div>
+            )}
+
+            {/* Image */}
+            <motion.img 
+              key={src} // Key change triggers animation
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.2, ease: "out" }}
+              src={src} 
+              alt="" 
+              className="relative z-10 max-w-full max-h-[70vh] md:max-h-[80vh] object-contain shadow-2xl pointer-events-auto select-none"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = Math.abs(offset.x) * velocity.x;
+                if (swipe < -100) onNext();
+                else if (swipe > 100) onPrev();
+              }}
+              onLoad={() => setLoading(false)}
+            />
+
+            {/* Counter */}
+            <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 font-mono text-white/60 text-sm md:text-base tracking-[0.2em] uppercase pointer-events-auto whitespace-nowrap z-[210]">
+                {String(index + 1).padStart(2, '0')}/{total}
+            </div>
+        </div>
+    </div>
+  );
+};
+
 export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProjectSelect, onLightboxToggle }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isHoveringImage, setIsHoveringImage] = useState(false);
+  
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Preload images once
+  useEffect(() => {
+    ALL_FRAMES.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -54,17 +219,60 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Все элементы теперь используют aspect-square для строгой геометрии
+  // Global Scroll Lock Management - moved to parent for reliability
+  const isLightboxOpen = lightboxIndex !== null;
+  
+  useEffect(() => {
+    if (isLightboxOpen) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      // Disable scroll snap to prevent conflicts when re-enabling scroll
+      document.documentElement.style.scrollSnapType = 'none';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.documentElement.style.scrollSnapType = '';
+    }
+
+    return () => {
+      // Ensure we clean up if component unmounts
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.documentElement.style.scrollSnapType = '';
+    };
+  }, [isLightboxOpen]);
+
+  useEffect(() => {
+    if (onLightboxToggle) onLightboxToggle(isLightboxOpen);
+  }, [isLightboxOpen, onLightboxToggle]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    mouseX.set(e.clientX);
+    mouseY.set(e.clientY);
+  };
+
+  const nextImage = () => {
+    if (lightboxIndex !== null) {
+      setLightboxIndex((prev) => (prev! + 1) % ALL_FRAMES.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (lightboxIndex !== null) {
+      setLightboxIndex((prev) => (prev! - 1 + ALL_FRAMES.length) % ALL_FRAMES.length);
+    }
+  };
+
   const gridLayout = [
     { type: 'IMG', col: 'md:col-start-1 md:row-start-1 md:col-span-2 md:row-span-2', srcIdx: 0 },
-    { type: 'INFO', col: 'md:col-start-3 md:row-start-1 md:col-span-1 md:row-span-1', projectIdx: 0 },
+    { type: 'EMPTY', col: 'md:col-start-3 md:row-start-1 md:col-span-1 md:row-span-1' },
     { type: 'IMG', col: 'md:col-start-5 md:row-start-1 md:col-span-1 md:row-span-1', srcIdx: 1 },
     { type: 'IMG', col: 'md:col-start-4 md:row-start-2 md:col-span-1 md:row-span-1', srcIdx: 2 },
     { type: 'IMG', col: 'md:col-start-2 md:row-start-3 md:col-span-1 md:row-span-1', srcIdx: 3 },
     { type: 'IMG', col: 'md:col-start-3 md:row-start-3 md:col-span-2 md:row-span-2', srcIdx: 4 },
-    { type: 'INFO', col: 'md:col-start-5 md:row-start-3 md:col-span-1 md:row-span-1', projectIdx: 1 },
+    { type: 'EMPTY', col: 'md:col-start-5 md:row-start-3 md:col-span-1 md:row-span-1' },
     { type: 'IMG', col: 'md:col-start-1 md:row-start-4 md:col-span-1 md:row-span-1', srcIdx: 5 },
-    { type: 'INFO', col: 'md:col-start-1 md:row-start-5 md:col-span-1 md:row-span-1', projectIdx: 2 },
+    { type: 'EMPTY', col: 'md:col-start-1 md:row-start-5 md:col-span-1 md:row-span-1' },
     { type: 'IMG', col: 'md:col-start-2 md:row-start-5 md:col-span-2 md:row-span-2', srcIdx: 6 },
     { type: 'IMG', col: 'md:col-start-5 md:row-start-5 md:col-span-1 md:row-span-1', srcIdx: 7 },
     { type: 'IMG', col: 'md:col-start-4 md:row-start-6 md:col-span-1 md:row-span-1', srcIdx: 8 },
@@ -72,96 +280,88 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
     { type: 'IMG', col: 'md:col-start-3 md:row-start-7 md:col-span-1 md:row-span-1', srcIdx: 10 },
     { type: 'IMG', col: 'md:col-start-4 md:row-start-7 md:col-span-2 md:row-span-2', srcIdx: 11 },
     { type: 'IMG', col: 'md:col-start-2 md:row-start-8 md:col-span-1 md:row-span-1', srcIdx: 12 },
-    { type: 'INFO', col: 'md:col-start-3 md:row-start-8 md:col-span-1 md:row-span-1', projectIdx: 3 },
   ];
 
-  useEffect(() => {
-    if (onLightboxToggle) onLightboxToggle(lightboxIndex !== null);
-  }, [lightboxIndex, onLightboxToggle]);
-
-  const handleLightboxNext = useCallback(() => setLightboxIndex((prev) => (prev === null ? null : (prev + 1) % ALL_FRAMES.length)), []);
-  const handleLightboxPrev = useCallback(() => setLightboxIndex((prev) => (prev === null ? null : (prev - 1 + ALL_FRAMES.length) % ALL_FRAMES.length)), []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (lightboxIndex === null) return;
-      if (e.key === 'ArrowRight') handleLightboxNext();
-      if (e.key === 'ArrowLeft') handleLightboxPrev();
-      if (e.key === 'Escape') setLightboxIndex(null);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxIndex, handleLightboxNext, handleLightboxPrev]);
-
   return (
-    <div className="w-full flex flex-col relative z-10">
-      {isMobile ? (
-        <div className="grid grid-cols-2 gap-4 w-full px-6 pb-24">
-          {ALL_FRAMES.slice(0, 16).map((src, idx) => (
-            <div 
-              key={idx} 
-              className="aspect-square relative cursor-pointer border-[0.5px] border-white/20 overflow-hidden shadow-lg bg-black/10" 
-              onClick={() => setLightboxIndex(idx)}
-            >
-               <img src={getThumb(src)} alt={`Frame ${idx}`} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-5 gap-4 w-full px-16">
-          {gridLayout.map((item, idx) => {
-            if (item.type === 'INFO') {
-              const project = projects[item.projectIdx! % projects.length];
-              return (
-                <div key={`info-${idx}`} className={`${item.col} aspect-square flex flex-col justify-between p-4 border border-white/40 bg-black/5 backdrop-blur-sm`}>
-                   <div className="font-mono text-[10px] text-white/60 font-bold tracking-widest">{getProjectCode(project.id)}</div>
-                   <h3 className="text-sm font-bold uppercase leading-tight text-white break-words">{project.title}</h3>
-                </div>
-              );
-            }
-
-            return (
-              <div 
-                key={`img-${idx}`} 
-                className={`${item.col} aspect-square relative cursor-pointer bg-black/10 overflow-hidden border border-white/10 group`} 
-                onClick={() => setLightboxIndex(item.srcIdx!)}
-              >
-                <img 
-                  src={getThumb(ALL_FRAMES[item.srcIdx!])} 
-                  alt="Styleframe" 
-                  className="w-full h-full object-cover grayscale-[0.3] hover:grayscale-0 transition-all duration-700 group-hover:scale-105" 
-                  loading="lazy"
-                />
-              </div>
-            );
-          })}
-        </div>
+    <div 
+      className={`w-full flex flex-col relative bg-red-600 ${isHoveringImage && !isMobile ? 'cursor-none' : ''}`}
+      onMouseMove={handleMouseMove}
+    >
+      
+      {/* Custom Animated Snappy Eye Cursor */}
+      {!isMobile && (
+        <motion.div
+          className="fixed top-0 left-0 z-[150] pointer-events-none"
+          style={{
+            x: mouseX,
+            y: mouseY,
+            translateX: '-50%',
+            translateY: '-50%',
+          }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ 
+            opacity: isHoveringImage && lightboxIndex === null ? 1 : 0,
+            scale: isHoveringImage && lightboxIndex === null ? 1 : 0
+          }}
+          transition={{ duration: 0.1, ease: "linear" }}
+        >
+          <AnimatedEye />
+        </motion.div>
       )}
 
-      {/* Lightbox Section */}
+      {/* Foreground Grid Layer */}
+      <div className="relative z-10 w-full py-12 md:py-24">
+        {isMobile ? (
+          <div className="grid grid-cols-2 gap-2 px-8">
+            {ALL_FRAMES.slice(0, 16).map((src, idx) => (
+              <div 
+                key={idx} 
+                className="aspect-square relative overflow-hidden bg-black/10 rounded-sm shadow-xl cursor-pointer" 
+                onClick={() => setLightboxIndex(idx)}
+              >
+                 <img src={getThumb(src)} alt="" className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-5 gap-0 w-full px-16">
+            {gridLayout.map((item, idx) => {
+              if (item.type === 'EMPTY') {
+                return <div key={`empty-${idx}`} className={`${item.col} aspect-square`}></div>;
+              }
+              return (
+                <div 
+                  key={`img-${idx}`} 
+                  className={`${item.col} aspect-square relative bg-black/10 overflow-hidden shadow-2xl group border border-white/20 transition-all duration-300`} 
+                  onMouseEnter={() => setIsHoveringImage(true)}
+                  onMouseLeave={() => setIsHoveringImage(false)}
+                  onClick={() => {
+                    setLightboxIndex(item.srcIdx!);
+                    setIsHoveringImage(false);
+                  }}
+                >
+                  <img 
+                    src={getThumb(ALL_FRAMES[item.srcIdx!])} 
+                    alt="" 
+                    className="w-full h-full object-cover select-none pointer-events-none" 
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Lightbox via Isolated Component - No AnimatePresence to prevent exit bugs */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center animate-fade-in" onClick={() => setLightboxIndex(null)}>
-            <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors z-[120] p-4" onClick={(e) => { e.stopPropagation(); setLightboxIndex(null); }}>
-                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-            <button className="absolute left-8 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors z-[120] p-4" onClick={(e) => { e.stopPropagation(); handleLightboxPrev(); }}>
-                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            <button className="absolute right-8 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors z-[120] p-4" onClick={(e) => { e.stopPropagation(); handleLightboxNext(); }}>
-                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5l7 7-7 7" /></svg>
-            </button>
-            <div className="relative w-[85vw] h-[80vh] flex items-center justify-center">
-                <img 
-                  src={ALL_FRAMES[lightboxIndex]} 
-                  alt={`Styleframe ${lightboxIndex}`} 
-                  className="max-w-full max-h-full object-contain shadow-2xl" 
-                  onClick={(e) => e.stopPropagation()} 
-                />
-            </div>
-            <div className="mt-8 text-white/40 font-mono text-xs tracking-[0.4em] uppercase">
-                {String(lightboxIndex + 1).padStart(2, '0')} — {ALL_FRAMES.length}
-            </div>
-        </div>
+        <Lightbox 
+          src={ALL_FRAMES[lightboxIndex]}
+          index={lightboxIndex}
+          total={ALL_FRAMES.length}
+          onClose={() => setLightboxIndex(null)}
+          onNext={nextImage}
+          onPrev={prevImage}
+        />
       )}
     </div>
   );
