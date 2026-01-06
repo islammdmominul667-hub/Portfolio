@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, useMotionValue } from 'framer-motion';
 import { Project } from '../types';
 
@@ -10,8 +11,8 @@ interface StyleframeGridProps {
 }
 
 const ALL_FRAMES = [
+ "/frames/NRF_1.png",
   "/frames/NRF_2.png",
-  "/frames/NRF_1.png",
   "/frames/NRF_3.png",
   "/frames/1ST_REG_1.png",
   "/frames/1ST_REG_2.png",
@@ -105,9 +106,10 @@ const Lightbox: React.FC<LightboxProps> = ({ src, index, total, onClose, onNext,
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, onNext, onPrev]);
 
-  return (
+  // Use createPortal to move the modal to document.body, avoiding z-index stacking issues
+  return createPortal(
     <div 
-      className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-sm flex items-center justify-center cursor-auto" 
+      className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center cursor-auto" 
       onClick={(e) => {
         // Close on background click
         e.stopPropagation();
@@ -179,7 +181,8 @@ const Lightbox: React.FC<LightboxProps> = ({ src, index, total, onClose, onNext,
                 {String(index + 1).padStart(2, '0')}/{total}
             </div>
         </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
