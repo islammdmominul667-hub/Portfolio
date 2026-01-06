@@ -1,7 +1,8 @@
 export interface Project {
   id: number;
   title: string;
-  videoUrl: string; // Placeholder URL
+  videoUrl: string; // Full video (Vimeo)
+  previewUrl?: string; // Preview video (Kinescope)
   description: string;
   software: string[];
   date: string;
