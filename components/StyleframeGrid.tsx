@@ -28,6 +28,8 @@ const ALL_FRAMES = [
   "/frames/photo1.png",
 ];
 
+const TEXT_CONTENT = "Motion is the primary language of the modern digital landscape. At the core of high-quality motion design lies more than just algorithms or complex geometry; it requires a deep understanding of rhythm and visual dramaturgy. Every project begins with the search for the perfect balance between form and function, where light, texture, and dynamics operate as a single mechanism. We do not merely create images; we manipulate time within the frame. Whether it is the subtle glint on a product’s edge or a large-scale installation that alters the perception of architecture, the goal remains the same: to capture attention and evoke emotion. True design exists at the intersection of technology and intuition, transforming static pixels into a living, breathing experience. It is the process of turning the chaos of ideas into a structured visual narrative that speaks to the viewer without words.";
+
 const getThumb = (url: string) => {
   if (url.includes('picsum.photos')) {
     return url.replace('1000/1000', '500/500');
@@ -302,8 +304,18 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
         </motion.div>
       )}
 
-      {/* Foreground Grid Layer */}
-      <div className="relative z-10 w-full py-12 md:py-24">
+      {/* Background Text Layer (z-0) */}
+      <div className="absolute inset-0 z-0 flex flex-col justify-start items-center pointer-events-none overflow-hidden select-none">
+        {/* Container aligned with grid padding to ensure text fits exactly within the grid's visual bounds */}
+        <div className="w-full h-full px-8 md:px-16 pt-12 pb-12 md:py-24">
+            <p className="w-full text-justify font-black uppercase text-[8vw] md:text-[4.95vw] leading-[1.05] tracking-tighter text-white break-words hyphens-auto">
+               {TEXT_CONTENT}
+            </p>
+        </div>
+      </div>
+
+      {/* Foreground Grid Layer (z-10) */}
+      <div className="relative z-10 w-full pt-12 md:py-24 pb-12">
         {isMobile ? (
           <div className="grid grid-cols-2 gap-[5px] px-8">
             {ALL_FRAMES.slice(0, 16).map((src, idx) => (
