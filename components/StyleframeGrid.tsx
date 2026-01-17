@@ -313,7 +313,7 @@ export const StyleframeGrid: React.FC<StyleframeGridProps> = ({ projects, onProj
             </p>
         </div>
       </div>
-
+ 
       {/* Foreground Grid Layer (z-10) */}
       <div className="relative z-10 w-full pt-12 md:py-24 pb-12">
         {isMobile ? (
