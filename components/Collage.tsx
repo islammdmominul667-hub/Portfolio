@@ -68,4 +68,4 @@ export const Collage: React.FC<CollageProps> = ({ projects }) => {
         </div>
     </div>
   );
-};
+}; 
